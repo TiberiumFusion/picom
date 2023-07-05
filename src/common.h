@@ -399,6 +399,13 @@ typedef struct session {
 	int (*vsync_wait)(session_t *);
 } session_t;
 
+static xcb_window_t attr_unused session_get_target_window(session_t *ps) {
+	if (ps->o.debug_mode) {
+		return ps->debug_window;
+	}
+	return ps->overlay != XCB_NONE ? ps->overlay : ps->c.screen_info->root;
+}
+
 /// Enumeration for window event hints.
 typedef enum { WIN_EVMODE_UNKNOWN, WIN_EVMODE_FRAME, WIN_EVMODE_CLIENT } win_evmode_t;
 

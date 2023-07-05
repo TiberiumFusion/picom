@@ -1332,13 +1332,6 @@ err_out:
 	return false;
 }
 
-xcb_window_t session_get_target_window(session_t *ps) {
-	if (ps->o.debug_mode) {
-		return ps->debug_window;
-	}
-	return ps->overlay != XCB_NONE ? ps->overlay : ps->c.screen_info->root;
-}
-
 uint8_t session_redirection_mode(session_t *ps) {
 	if (ps->o.debug_mode) {
 		// If the backend is not rendering to the screen, we don't need to
