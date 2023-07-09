@@ -156,8 +156,6 @@ typedef struct session {
 	ev_timer fade_timer;
 	/// Use an ev_timer callback for drawing
 	ev_timer draw_timer;
-	/// Timer for the end of each vblanks. Used for calling schedule_render.
-	ev_timer vblank_timer;
 	/// Called every time we have timeouts or new data on socket,
 	/// so we can be sure if xcb read from X socket at anytime during event
 	/// handling, we will not left any event unhandled in the queue
@@ -225,9 +223,6 @@ typedef struct session {
 	bool first_frame;
 	/// Whether screen has been turned off
 	bool screen_is_off;
-	/// We asked X server to send us a event for the end of a vblank, and we haven't
-	/// received one yet.
-	bool vblank_event_requested;
 	/// Event context for X Present extension.
 	uint32_t present_event_id;
 	xcb_special_event_t *present_event;
@@ -242,6 +237,7 @@ typedef struct session {
 	uint64_t next_render;
 	/// Whether we can perform frame pacing.
 	bool frame_pacing;
+	struct vblank_scheduler *vblank_scheduler;
 
 	/// Render statistics
 	struct render_statistics render_stats;
