@@ -289,6 +289,15 @@ static void usage(const char *argv0, int ret) {
 	    "  Additionally use X Sync fence to sync clients' draw calls. Needed\n"
 	    "  on nvidia-drivers with GLX backend for some users.\n"
 	    "\n"
+	    "--glx-fshader-win <entire shader source code>\n"
+	    "  GLX backend: Use specified GLSL fragment shader for rendering window\n"
+	    "  contents. Pipe this in somehow (e.g. xargs).\n"
+	    "\n"
+	    "--glx-fshader-win-fb-sampler-opts <options>\n"
+	    "  GLX backend: Comma-delineated parameters for the framebuffer's\n"
+      "  texture sampler in the GLSL fragment shader.\n"
+      "  Default: nearest,wrap\n"
+	    "\n"
 	    "--force-win-blend\n"
 	    "  Force all windows to be painted with blending. Useful if you have a\n"
 	    "  --glx-fshader-win that could turn opaque pixels transparent.\n"
@@ -410,6 +419,7 @@ static const struct option longopts[] = {
     {"monitor-repaint", no_argument, NULL, 800},
     {"diagnostics", no_argument, NULL, 801},
     {"debug-mode", no_argument, NULL, 802},
+    {"glx-fshader-win-fb-sampler-opts", required_argument, NULL, 1000},
     // Must terminate with a NULL entry
     {NULL, 0, NULL, 0},
 };
@@ -782,6 +792,37 @@ void get_cfg(options_t *opt, int argc, char *const *argv, bool shadow_enable,
 		P_CASEBOOL(800, monitor_repaint);
 		case 801: opt->print_diagnostics = true; break;
 		P_CASEBOOL(802, debug_mode);
+		
+		case 1000: // --glx-fshader-win-fb-sampler-opts
+		{
+			char* allTerms = strdup(optarg);
+			char* term = strtok(allTerms, ",");
+			while (term)
+			{
+				if (term == NULL)
+					term = allTerms;
+				
+				if (strcmp(term, "nearest") == 0)
+					opt->glx_fshader_win_fb_sampler_filter_mode = GLSL_SAMPLER_NEAREST;
+				else if (strcmp(term, "linear") == 0)
+					opt->glx_fshader_win_fb_sampler_filter_mode = GLSL_SAMPLER_LINEAR;
+				else if (strcmp(term, "clamp") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_CLAMP_TO_EDGE;
+				else if (strcmp(term, "repeat") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_REPEAT;
+				else if (strcmp(term, "mirror") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_MIRROR;
+				else
+				{
+					log_error("Invalid sampler option: %s", term);
+					exit(1);
+				}
+				
+				term = strtok(NULL, ",");
+			}
+			break;
+		}
+		
 		default: usage(argv[0], 1); break;
 #undef P_CASEBOOL
 		}

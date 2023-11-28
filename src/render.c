@@ -44,7 +44,7 @@
  * Bind texture in paint_t if we are using GLX backend.
  */
 static inline bool paint_bind_tex(session_t *ps, paint_t *ppaint, int wid, int hei,
-                                  bool repeat, int depth, xcb_visualid_t visual, bool force) {
+                                  bool force_repeat, int depth, xcb_visualid_t visual, bool force) {
 #ifdef CONFIG_OPENGL
 	// XXX This is a mess. But this will go away after the backend refactor.
 	static thread_local struct glx_fbconfig_info *argb_fbconfig = NULL;
@@ -90,8 +90,12 @@ static inline bool paint_bind_tex(session_t *ps, paint_t *ppaint, int wid, int h
 	}
 
 	if (force || !glx_tex_binded(ppaint->ptex, ppaint->pixmap))
+	{
 		return glx_bind_pixmap(ps, &ppaint->ptex, ppaint->pixmap, wid, hei,
-		                       repeat, fbcfg);
+		                       ps->o.glx_fshader_win_fb_sampler_filter_mode,
+		                       force_repeat ? GLSL_SAMPLER_REPEAT : ps->o.glx_fshader_win_fb_sampler_wrap_mode,
+													 fbcfg);
+	}
 #endif
 	return true;
 }

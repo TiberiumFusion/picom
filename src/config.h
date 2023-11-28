@@ -55,6 +55,22 @@ typedef struct win_option {
 	double opacity;
 } win_option_t;
 
+
+enum glsl_sampler2d_filter_mode
+{
+	GLSL_SAMPLER_NEAREST,
+	GLSL_SAMPLER_LINEAR,
+	GLSL_SAMPLER_NUM_FILTER_MODE,
+};
+
+enum glsl_sampler2d_wrap_mode
+{
+	GLSL_SAMPLER_CLAMP_TO_EDGE,
+	GLSL_SAMPLER_REPEAT,
+	GLSL_SAMPLER_MIRROR,
+	GLSL_SAMPLER_NUM_WRAP_MODE,
+};
+
 typedef struct _c2_lptr c2_lptr_t;
 
 /// Structure representing all options.
@@ -64,6 +80,7 @@ typedef struct options {
 	bool print_diagnostics;
 	/// Render to a separate window instead of taking over the screen
 	bool debug_mode;
+	
 	// === General ===
 	/// Use the experimental new backends?
 	bool experimental_backends;
@@ -81,6 +98,9 @@ typedef struct options {
 	bool glx_no_rebind_pixmap;
 	/// Custom fragment shader for painting windows, as a string.
 	char *glx_fshader_win_str;
+	/// Options for the framebuffer's GLSL sampler in the shader above
+	enum glsl_sampler2d_filter_mode glx_fshader_win_fb_sampler_filter_mode;
+	enum glsl_sampler2d_wrap_mode glx_fshader_win_fb_sampler_wrap_mode;
 	/// Whether to detect rounded corners.
 	bool detect_rounded_corners;
 	/// Force painting of window content with blending.

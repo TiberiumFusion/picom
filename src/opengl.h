@@ -13,6 +13,7 @@
 
 #include "common.h"
 #include "compiler.h"
+#include "config.h"
 #include "log.h"
 #include "region.h"
 #include "render.h"
@@ -85,8 +86,11 @@ bool glx_load_prog_main(session_t *ps, const char *vshader_str, const char *fsha
                         glx_prog_main_t *pprogram);
 #endif
 
-bool glx_bind_pixmap(session_t *ps, glx_texture_t **pptex, xcb_pixmap_t pixmap, int width,
-                     int height, bool repeat, const struct glx_fbconfig_info *);
+bool glx_bind_pixmap(session_t *ps, glx_texture_t **pptex, xcb_pixmap_t pixmap,
+										 int width, int height,
+										 enum glsl_sampler2d_filter_mode glFilterMode,
+										 enum glsl_sampler2d_wrap_mode glWrapMode,
+										 const struct glx_fbconfig_info *);
 
 void glx_release_pixmap(session_t *ps, glx_texture_t *ptex);
 
