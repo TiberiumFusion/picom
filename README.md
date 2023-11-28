@@ -1,3 +1,17 @@
+## Minor alterations to picom
+
+My use case for picom is strictly as an improved version of compton with fewer bugs and flaws.
+<br/>My changes target the picom v7.5 release as baseline. Later versions of picom have significantly diverged too much from compton.
+
+### Changes
+* TBA
+
+<br/>
+
+-----
+> Original **picom** readme below 
+-----
+
 picom
 =======
 
