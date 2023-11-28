@@ -4,12 +4,20 @@ My use case for picom is strictly as an improved version of compton with fewer b
 <br/>My changes target the picom v7.5 release as baseline. Later versions of picom have significantly diverged too much from compton.
 
 ### Changes
-* TBA
+* New argument: `--glx-fshader-win-fb-sampler-opts`. Only meaningful when `--glx-fshader-win` is also used. Sets the filtering mode and wrapping mode for the framebuffer GL texture, which is bound as sampler 0 to the fragment shader.
+  * Value to this argument is a comma-delineated list of options.
+  * Valid filtering choices: `nearest` `linear`
+  * Valid wrapping choices: `clamp` `repeat` `mirror`
+  * Any combination of the above choices is valid
+  * Example values: `--glx-fshader-win-fb-sampler-opts nearest` `--glx-fshader-win-fb-sampler-opts linear,repeat`
+  * When not specified, filtering choice defaults to `nearest`
+  * When not specified, wrapping choice defaults to `clamp`
 
-<br/>
+### Builds
+Releases are not currently provided. Build branch `develop-v7` instead. Refer to build instructions from the original picom readme.
 
 -----
-> Original **picom** readme below 
+> ↓ Original **picom** readme preserved below ↓
 -----
 
 picom
