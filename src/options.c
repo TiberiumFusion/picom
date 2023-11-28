@@ -799,9 +799,6 @@ void get_cfg(options_t *opt, int argc, char *const *argv, bool shadow_enable,
 			char* term = strtok(allTerms, ",");
 			while (term)
 			{
-				if (term == NULL)
-					term = allTerms;
-				
 				if (strcmp(term, "nearest") == 0)
 					opt->glx_fshader_win_fb_sampler_filter_mode = GLSL_SAMPLER_NEAREST;
 				else if (strcmp(term, "linear") == 0)
