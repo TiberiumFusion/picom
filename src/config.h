@@ -64,6 +64,23 @@ typedef struct win_option {
 	double opacity;
 } win_option_t;
 
+
+enum glsl_sampler2d_filter_mode
+{
+	GLSL_SAMPLER_NEAREST,
+	GLSL_SAMPLER_LINEAR,
+	GLSL_SAMPLER_NUM_FILTER_MODE,
+};
+
+enum glsl_sampler2d_wrap_mode
+{
+	GLSL_SAMPLER_CLAMP_TO_EDGE,
+	GLSL_SAMPLER_REPEAT,
+	GLSL_SAMPLER_MIRROR,
+	GLSL_SAMPLER_NUM_WRAP_MODE,
+};
+
+
 typedef struct _c2_lptr c2_lptr_t;
 
 // This macro is here because this is the maximum number
@@ -77,6 +94,7 @@ typedef struct options_t {
 	// === Debugging ===
 	bool monitor_repaint;
 	bool print_diagnostics;
+	
 	// === General ===
 	/// The configuration file we used.
 	char *config_file;
@@ -98,6 +116,9 @@ typedef struct options_t {
 	bool glx_use_gpushader4;
 	/// Custom fragment shader for painting windows, as a string.
 	char *glx_fshader_win_str;
+	/// Options for the framebuffer's GLSL sampler in the shader above
+	enum glsl_sampler2d_filter_mode glx_fshader_win_fb_sampler_filter_mode;
+	enum glsl_sampler2d_wrap_mode glx_fshader_win_fb_sampler_wrap_mode;
 	/// Whether to fork to background.
 	bool fork_after_register;
 	/// Whether to detect rounded corners.

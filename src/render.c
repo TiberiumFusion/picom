@@ -41,7 +41,9 @@ static inline bool paint_bind_tex(session_t *ps, paint_t *ppaint, unsigned wid,
 		return false;
 
 	if (force || !glx_tex_binded(ppaint->ptex, ppaint->pixmap))
-		return glx_bind_pixmap(ps, &ppaint->ptex, ppaint->pixmap, wid, hei, depth);
+		return glx_bind_pixmap(ps, &ppaint->ptex, ppaint->pixmap, wid, hei, depth,
+								ps->o.glx_fshader_win_fb_sampler_filter_mode,
+								ps->o.glx_fshader_win_fb_sampler_wrap_mode);
 
 	return true;
 }
@@ -433,7 +435,9 @@ static bool get_root_tile(session_t *ps) {
 #ifdef CONFIG_OPENGL
 	if (BKEND_GLX == ps->o.backend)
 		return glx_bind_pixmap(ps, &ps->root_tile_paint.ptex,
-		                       ps->root_tile_paint.pixmap, 0, 0, 0);
+		                       ps->root_tile_paint.pixmap, 0, 0, 0,
+							   ps->o.glx_fshader_win_fb_sampler_filter_mode,
+							   ps->o.glx_fshader_win_fb_sampler_wrap_mode);
 #endif
 
 	return true;

@@ -338,6 +338,15 @@ static void usage(int ret) {
 	    "--xrender-sync\n"
 	    "  Attempt to synchronize client applications' draw calls with XSync(),\n"
 	    "  used on GLX backend to ensure up-to-date window content is painted.\n"
+	    "\n"
+	    "--glx-fshader-win <entire shader source code>\n"
+	    "  GLX backend: Use specified GLSL fragment shader for rendering window\n"
+	    "  contents. Pipe this in somehow (e.g. xargs).\n"
+	    "\n"
+	    "--glx-fshader-win-fb-sampler-opts <options>\n"
+	    "  GLX backend: Comma-delineated parameters for the framebuffer's\n"
+		"  texture sampler in the GLSL fragment shader.\n"
+		"  Default: nearest,wrap\n"
 #undef WARNING
 #define WARNING
 	    "\n"
@@ -464,6 +473,7 @@ static const struct option longopts[] = {
     {"glx-reinit-on-root-change", no_argument, NULL, 732},
     {"monitor-repaint", no_argument, NULL, 800},
     {"diagnostics", no_argument, NULL, 801},
+    {"glx-fshader-win-fb-sampler-opts", required_argument, NULL, 1000},
     // Must terminate with a NULL entry
     {NULL, 0, NULL, 0},
 };
@@ -762,9 +772,6 @@ void get_cfg(options_t *opt, int argc, char *const *argv, bool shadow_enable,
 		P_CASEBOOL(316, force_win_blend);
 		case 317:
 			opt->glx_fshader_win_str = strdup(optarg);
-			log_warn("--glx-fshader-win is being deprecated, and might be "
-			         "removed in the future. If you really need this "
-			         "feature, please report an issue to let us know");
 			break;
 		case 321: {
 			enum log_level tmp_level = string_to_log_level(optarg);
@@ -780,6 +787,34 @@ void get_cfg(options_t *opt, int argc, char *const *argv, bool shadow_enable,
 		P_CASEBOOL(732, glx_reinit_on_root_change);
 		P_CASEBOOL(800, monitor_repaint);
 		case 801: opt->print_diagnostics = true; break;
+		
+		case 1000: // --glx-fshader-win-fb-sampler-opts
+		{
+			char* allTerms = strdup(optarg);
+			char* term = strtok(allTerms, ",");
+			while (term)
+			{
+				if (strcmp(term, "nearest") == 0)
+					opt->glx_fshader_win_fb_sampler_filter_mode = GLSL_SAMPLER_NEAREST;
+				else if (strcmp(term, "linear") == 0)
+					opt->glx_fshader_win_fb_sampler_filter_mode = GLSL_SAMPLER_LINEAR;
+				else if (strcmp(term, "clamp") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_CLAMP_TO_EDGE;
+				else if (strcmp(term, "repeat") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_REPEAT;
+				else if (strcmp(term, "mirror") == 0)
+					opt->glx_fshader_win_fb_sampler_wrap_mode = GLSL_SAMPLER_MIRROR;
+				else
+				{
+					log_error("Invalid sampler option: %s", term);
+					exit(1);
+				}
+
+				term = strtok(NULL, ",");
+			}
+			break;
+		}
+		
 		default: usage(1); break;
 #undef P_CASEBOOL
 		}

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "common.h"
+#include "config.h"
 #include "region.h"
 #include "render.h"
 #include "compiler.h"
@@ -176,7 +177,9 @@ glx_load_prog_main(session_t *ps,
 
 bool
 glx_bind_pixmap(session_t *ps, glx_texture_t **pptex, xcb_pixmap_t pixmap,
-    unsigned width, unsigned height, unsigned depth);
+    unsigned width, unsigned height, unsigned depth,
+	enum glsl_sampler2d_filter_mode glFilterMode,
+	enum glsl_sampler2d_wrap_mode glWrapMode);
 
 void
 glx_release_pixmap(session_t *ps, glx_texture_t *ptex);

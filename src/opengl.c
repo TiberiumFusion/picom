@@ -700,7 +700,10 @@ glx_load_prog_main(session_t *ps,
  */
 bool
 glx_bind_pixmap(session_t *ps, glx_texture_t **pptex, xcb_pixmap_t pixmap,
-    unsigned width, unsigned height, unsigned depth) {
+				unsigned width, unsigned height, unsigned depth,
+				enum glsl_sampler2d_filter_mode glFilterMode,
+				enum glsl_sampler2d_wrap_mode glWrapMode)
+{
   if (ps->o.backend != BKEND_GLX && ps->o.backend != BKEND_XR_GLX_HYBRID)
     return true;
 
@@ -811,12 +814,37 @@ glx_bind_pixmap(session_t *ps, glx_texture_t **pptex, xcb_pixmap_t pixmap,
     GLuint texture = 0;
     glGenTextures(1, &texture);
     glBindTexture(ptex->target, texture);
+	
+	// Filter mode
+	if (glFilterMode == GLSL_SAMPLER_NEAREST)
+	{
+		glTexParameteri(ptex->target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(ptex->target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else if (glFilterMode == GLSL_SAMPLER_LINEAR)
+	{
+		glTexParameteri(ptex->target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(ptex->target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 
-    glTexParameteri(ptex->target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(ptex->target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(ptex->target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(ptex->target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// Wrap mode
+	if (glWrapMode == GLSL_SAMPLER_CLAMP_TO_EDGE)
+	{
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
 
+	else if (glWrapMode == GLSL_SAMPLER_REPEAT)
+	{
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+	else if (glWrapMode == GLSL_SAMPLER_MIRROR)
+	{
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+		glTexParameteri(ptex->target, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	}
+	
     glBindTexture(ptex->target, 0);
 
     ptex->texture = texture;
